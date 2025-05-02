@@ -2,10 +2,10 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 /// <summary>
-/// SEŒü‚¯‚ÉAudioSource‚ğƒv[ƒ‹‚ÅŠÇ—‚·‚éƒNƒ‰ƒX<para></para>
-/// - –¢g—p‚ÌAudioSource‚ª‚ ‚ê‚Î‚»‚ê‚ğ•Ô‚·<para></para>
-/// - ‘S‚Äg—p’†‚ÅÅ‘åƒTƒCƒY‚È‚çÅŒÃ‚Ì‚à‚Ì‚ğÄ—˜—p<para></para>
-/// - Å‘åƒTƒCƒY–¢–‚È‚çV‹Kì¬
+/// SEå‘ã‘ã«AudioSourceã‚’ãƒ—ãƒ¼ãƒ«ã§ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹<para></para>
+/// - æœªä½¿ç”¨ã®AudioSourceãŒã‚ã‚Œã°ãã‚Œã‚’è¿”ã™<para></para>
+/// - å…¨ã¦ä½¿ç”¨ä¸­ã§æœ€å¤§ã‚µã‚¤ã‚ºãªã‚‰æœ€å¤ã®ã‚‚ã®ã‚’å†åˆ©ç”¨<para></para>
+/// - æœ€å¤§ã‚µã‚¤ã‚ºæœªæº€ãªã‚‰æ–°è¦ä½œæˆ
 /// </summary>
 internal sealed class AudioSourcePool_OldestReuse : AudioSourcePool_Base
 {
@@ -17,9 +17,9 @@ internal sealed class AudioSourcePool_OldestReuse : AudioSourcePool_Base
 
     public override AudioSource Retrieve()
     {
-        Log.Safe("RetrieveÀs");
+        Log.Safe("Retrieveå®Ÿè¡Œ");
 
-        //–¢g—p‚ÌAudioSource‚ª‚ ‚ê‚ÎA‚»‚ê‚ğ•Ô‚·
+        //æœªä½¿ç”¨ã®AudioSourceãŒã‚ã‚Œã°ã€ãã‚Œã‚’è¿”ã™
         foreach (var source in pool)
         {
             if (source.isPlaying == false)
@@ -28,14 +28,14 @@ internal sealed class AudioSourcePool_OldestReuse : AudioSourcePool_Base
             }
         }
 
-        //ƒv[ƒ‹‚ªÅ‘åƒTƒCƒY‚Ìê‡AÅŒÃ‚Ì‚à‚Ì‚ğÄ—˜—p
+        //ãƒ—ãƒ¼ãƒ«ãŒæœ€å¤§ã‚µã‚¤ã‚ºã®å ´åˆã€æœ€å¤ã®ã‚‚ã®ã‚’å†åˆ©ç”¨
         if (pool.Count >= maxSize)
         {
             var oldest = pool.Dequeue();
             pool.Enqueue(oldest);
             return oldest;
         }
-        else //Å‘åƒTƒCƒY–¢–‚È‚çV‹Kì¬
+        else //æœ€å¤§ã‚µã‚¤ã‚ºæœªæº€ãªã‚‰æ–°è¦ä½œæˆ
         {
             var created = CreateSourceWithOwnerGameObject();
             pool.Enqueue(created);
