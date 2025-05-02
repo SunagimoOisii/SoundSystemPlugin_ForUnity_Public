@@ -1,7 +1,7 @@
 using System;
 
 /// <summary>
-/// ISoundCacheƒCƒ“ƒXƒ^ƒ“ƒX‚ğ¶¬‚·‚éƒtƒ@ƒNƒgƒŠ[ƒNƒ‰ƒX
+/// ISoundCacheã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç”Ÿæˆã™ã‚‹ãƒ•ã‚¡ã‚¯ãƒˆãƒªãƒ¼ã‚¯ãƒ©ã‚¹
 /// </summary>
 public static class SoundCacheFactory
 {
@@ -13,10 +13,10 @@ public static class SoundCacheFactory
     }
 
     /// <summary>
-    /// w’èƒLƒƒƒbƒVƒ…•û®‚É‰‚¶‚½ISoundCacheƒCƒ“ƒXƒ^ƒ“ƒX‚ğ¶¬‚·‚é
+    /// æŒ‡å®šã‚­ãƒ£ãƒƒã‚·ãƒ¥æ–¹å¼ã«å¿œã˜ãŸISoundCacheã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç”Ÿæˆã™ã‚‹
     /// </summary>
-    /// <param name="type">ƒLƒƒƒbƒVƒ…•û®</param>
-    /// <param name="param">•û®‚É‰‚¶‚½ƒpƒ‰ƒ[ƒ^(•b”‚Ü‚½‚ÍÅ‘å”)</param>
+    /// <param name="type">ã‚­ãƒ£ãƒƒã‚·ãƒ¥æ–¹å¼</param>
+    /// <param name="param">æ–¹å¼ã«å¿œã˜ãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿(ç§’æ•°ã¾ãŸã¯æœ€å¤§æ•°)</param>
     public static ISoundCache Create(SoundCacheType type, float param)
     {
         return type switch
@@ -24,7 +24,7 @@ public static class SoundCacheFactory
             SoundCacheType.LRU    => new SoundCache_LRU(idleTimeThreshold: param),
             SoundCacheType.TTL    => new SoundCache_TTL(ttlSeconds: param),
             SoundCacheType.Random => new SoundCache_Random(maxCacheCount: (int)param),
-            _ => throw new ArgumentOutOfRangeException(nameof(type), $"–¢‘Î‰‚ÌSoundCacheType: {type}")
+            _ => throw new ArgumentOutOfRangeException(nameof(type), $"æœªå¯¾å¿œã®SoundCacheType: {type}")
         };
     }
 }
