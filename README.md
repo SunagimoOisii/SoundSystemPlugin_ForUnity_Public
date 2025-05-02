@@ -9,19 +9,16 @@
 - [基本的な使い方](#基本的な使い方)
 
 ## 概要
-
 Unity向けの柔軟で拡張可能なサウンド管理システムです。  
 **BGM, SE, AudioMixerの統合制御、プリセットによる一括設定、AudioSourceプール、キャッシュ方式の選択、ログ出力機構**などを備えています。
 
 ## 使用技術
-
 - C#
 - Addressables
 - UniTask
 - Unity AudioMixer
 
 ## システム構成
-
 ```mermaid
 classDiagram
     class SoundSystem {
@@ -68,8 +65,8 @@ classDiagram
     AudioSourcePool_OldestReuse --> AudioSourcePool_Base
 ```
 
-## 機能のピックアップ
 
+## 機能のピックアップ
 ### SoundSystem.cs  
 - 外部APIを集約するファサードクラス  
 - `CreateFromPreset` によりプリセットベースの初期化が可能
@@ -93,18 +90,16 @@ classDiagram
 - クラス名を自動カテゴリ化しログ出力(Safe, Warn, Error)を一元管理  
 - 実行ログ、警告ログ、エラーログの分類に対応
 
----
 
 ## セットアップ
-
 ### 1. UniTask,Addressablesの導入
-本プロジェクトは `UniTask`, `Addressables` を前提としています。
+本プロジェクトは `UniTask`, `Addressables` を前提としています
 
-### 2. パッケージのインポート
-`SoundSystem.unitypackage` をUnityプロジェクトにインポートします。
+### 2. DLLの導入
+`SoundSystem.dll` をUnityプロジェクトのAssets/Pluginsフォルダ直下に入れます
 
 ### 3. SoundSystemインスタンス生成
-手動構成 or プリセットベースで生成できます。
+手動構成 or プリセットベースで生成できます
 
 ```csharp
 //手動構成の例
@@ -117,9 +112,7 @@ var soundSystem = SoundSystem.CreateFromPreset(preset, pool, mixer, mixerGroup);
 ```
 
 ## 基本的な使い方
-
 ### BGM再生
-
 ```csharp
 //通常再生
 await soundSystem.PlayBGM("bgm_title", 1.0f);
@@ -135,7 +128,6 @@ await soundSystem.PlayBGMWithPreset("bgm_battle", "BattlePreset");
 ```
 
 ### SE再生
-
 ```csharp
 //通常再生
 await soundSystem.PlaySE("se_click", Vector3.zero, 1.0f, 1.0f, 1.0f);
@@ -145,7 +137,6 @@ await soundSystem.PlaySEWithPreset("se_explosion", "ExplosionPreset");
 ```
 
 ### Mixer操作
-
 ```csharp
 //音量パラメータの取得・設定
 float? volume = soundSystem.RetrieveMixerParameter("MasterVolume");
@@ -153,7 +144,6 @@ soundSystem.RetrieveMixerParameter("MasterVolume", -10.0f);
 ```
 
 ### エフェクト適用
-
 ```csharp
 //リバーブフィルター適用
 soundSystem.ApplyEffectFilter<AudioReverbFilter>(
