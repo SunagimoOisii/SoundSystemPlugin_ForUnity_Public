@@ -3,16 +3,16 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 /// <summary>
-/// ƒTƒEƒ“ƒhƒŠƒ\[ƒX‚ÌƒLƒƒƒbƒVƒ…ŠÇ—‚ğ’S‚¤ƒNƒ‰ƒX‚ÌŠî’êƒNƒ‰ƒX<para></para>
-/// - ”h¶ƒNƒ‰ƒX‚Ìíœ•ûj‚²‚Æ‚ÉEvictŠÖ”‚ğƒI[ƒo[ƒ‰ƒCƒh‚³‚¹‚é
+/// ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚½ãƒ¼ã‚¹ã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥ç®¡ç†ã‚’æ‹…ã†ã‚¯ãƒ©ã‚¹ã®åŸºåº•ã‚¯ãƒ©ã‚¹<para></para>
+/// - æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã®å‰Šé™¤æ–¹é‡ã”ã¨ã«Evicté–¢æ•°ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã•ã›ã‚‹
 /// </summary>
 internal abstract class SoundCache_Base : ISoundCache
 {
     protected readonly Dictionary<string, AudioClip> cache = new();
 
     /// <summary>
-    /// w’èƒŠƒ\[ƒX‚ğƒLƒƒƒbƒVƒ…‚©‚çæ“¾‚·‚é<para></para>
-    /// æ“¾‚ÉÅIƒAƒNƒZƒXŠÔ‚àXV‚·‚é
+    /// æŒ‡å®šãƒªã‚½ãƒ¼ã‚¹ã‚’ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‹ã‚‰å–å¾—ã™ã‚‹<para></para>
+    /// å–å¾—æ™‚ã«æœ€çµ‚ã‚¢ã‚¯ã‚»ã‚¹æ™‚é–“ã‚‚æ›´æ–°ã™ã‚‹
     /// </summary>
     public virtual AudioClip Retrieve(string resourceAddress)
     {
@@ -24,7 +24,7 @@ internal abstract class SoundCache_Base : ISoundCache
     }
 
     /// <summary>
-    /// w’èƒŠƒ\[ƒX‚ğƒLƒƒƒbƒVƒ…‚É’Ç‰Á‚·‚é<para></para>
+    /// æŒ‡å®šãƒªã‚½ãƒ¼ã‚¹ã‚’ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã«è¿½åŠ ã™ã‚‹<para></para>
     /// </summary>
     public virtual void Add(string resourceAddress, AudioClip clip)
     {
@@ -35,18 +35,18 @@ internal abstract class SoundCache_Base : ISoundCache
     {
         if (cache.TryGetValue(resourceAddress, out var clip))
         {
-            Log.Safe($"RemoveÀs:{resourceAddress}");
+            Log.Safe($"Removeå®Ÿè¡Œ:{resourceAddress}");
             Addressables.Release(clip);
             cache.Remove(resourceAddress);
         }
     }
 
     /// <summary>
-    /// ƒLƒƒƒbƒVƒ…“à‚ÌAudioSource‚ğ‘S‚Ä”jŠü‚·‚é
+    /// ã‚­ãƒ£ãƒƒã‚·ãƒ¥å†…ã®AudioSourceã‚’å…¨ã¦ç ´æ£„ã™ã‚‹
     /// </summary>
     public virtual void ClearAll()
     {
-        Log.Safe("ClearAllÀs");
+        Log.Safe("ClearAllå®Ÿè¡Œ");
         foreach (var clip in cache.Values)
         {
             Addressables.Release(clip);
