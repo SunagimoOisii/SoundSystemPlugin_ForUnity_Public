@@ -3,8 +3,8 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 /// <summary>
-/// SEŒü‚¯‚ÉAudioSource‚ğƒv[ƒ‹‚ÅŠÇ—‚·‚éƒNƒ‰ƒX‚ÌŠî’êƒNƒ‰ƒX<para></para>
-/// - ”h¶ƒNƒ‰ƒX‚Ì•ûj‚²‚Æ‚ÉRetrieveŠÖ”‚ğƒI[ƒo[ƒ‰ƒCƒh‚³‚¹‚é
+/// SEå‘ã‘ã«AudioSourceã‚’ãƒ—ãƒ¼ãƒ«ã§ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹ã®åŸºåº•ã‚¯ãƒ©ã‚¹<para></para>
+/// - æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã®æ–¹é‡ã”ã¨ã«Retrieveé–¢æ•°ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã•ã›ã‚‹
 /// </summary>
 internal abstract class AudioSourcePool_Base : IAudioSourcePool
 {
@@ -24,7 +24,7 @@ internal abstract class AudioSourcePool_Base : IAudioSourcePool
         this.initSize = initSize;
         this.mixerGroup = mixerG;
 
-        //ƒv[ƒ‹‰Šú‰»
+        //ãƒ—ãƒ¼ãƒ«åˆæœŸåŒ–
         for (int i = 0; i < initSize; i++)
         {
             var source = CreateSourceWithOwnerGameObject();
@@ -34,22 +34,22 @@ internal abstract class AudioSourcePool_Base : IAudioSourcePool
 
     public void Reinitialize()
     {
-        Log.Safe("ReinitializeÀs");
+        Log.Safe("Reinitializeå®Ÿè¡Œ");
 
-        //ƒv[ƒ‹“à‚Ì—v‘f‚ğ‘S‚Ä–¢g—p‚É‚·‚é
+        //ãƒ—ãƒ¼ãƒ«å†…ã®è¦ç´ ã‚’å…¨ã¦æœªä½¿ç”¨ã«ã™ã‚‹
         foreach (var source in pool)
         {
             source.Stop();
             source.clip = null;
         }
 
-        //ƒv[ƒ‹ƒTƒCƒY‚ğ‰Šú‰»‚Ì’l‚É–ß‚·
-        while (pool.Count > initSize) //’´‰ß
+        //ãƒ—ãƒ¼ãƒ«ã‚µã‚¤ã‚ºã‚’åˆæœŸåŒ–æ™‚ã®å€¤ã«æˆ»ã™
+        while (pool.Count > initSize) //è¶…éæ™‚
         {
             var source = pool.Dequeue();
             Object.Destroy(source.gameObject);
         }
-        while (pool.Count < initSize) //•s‘«
+        while (pool.Count < initSize) //ä¸è¶³æ™‚
         {
             pool.Enqueue(CreateSourceWithOwnerGameObject());
         }
