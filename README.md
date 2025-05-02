@@ -118,7 +118,7 @@ var soundSystem = SoundSystem.CreateFromPreset(preset, pool, mixer, mixerGroup);
 
 ## 基本的な使い方
 
-### 🎵 BGM再生
+### BGM再生
 
 ```csharp
 //通常再生
