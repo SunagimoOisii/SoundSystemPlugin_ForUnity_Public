@@ -1,7 +1,7 @@
 using UnityEngine.Audio;
 
 /// <summary>
-/// IAudioSourcePoolインスタンスを生成するファクトリークラス
+/// IAudioSourcePool繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ繧堤函謌舌☆繧九ヵ繧｡繧ｯ繝医Μ繝ｼ繧ｯ繝ｩ繧ｹ
 /// </summary>
 public static class AudioSourcePoolFactory
 {
