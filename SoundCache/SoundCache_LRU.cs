@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ƒTƒEƒ“ƒhƒŠƒ\[ƒX‚ÌƒLƒƒƒbƒVƒ…ŠÇ—‚ğ’S‚¤ƒNƒ‰ƒX<para></para>
-/// - ÅIƒAƒNƒZƒXŠÔ‚ÉŠî‚Ã‚«Aw’èŠÔ–¢g—p‚ÌƒŠƒ\[ƒX‚ğíœ‘ÎÛ‚Æ‚·‚é
+/// ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚½ãƒ¼ã‚¹ã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥ç®¡ç†ã‚’æ‹…ã†ã‚¯ãƒ©ã‚¹<para></para>
+/// - æœ€çµ‚ã‚¢ã‚¯ã‚»ã‚¹æ™‚é–“ã«åŸºã¥ãã€æŒ‡å®šæ™‚é–“æœªä½¿ç”¨ã®ãƒªã‚½ãƒ¼ã‚¹ã‚’å‰Šé™¤å¯¾è±¡ã¨ã™ã‚‹
 /// </summary>
 internal sealed class SoundCache_LRU : SoundCache_Base
 {
@@ -48,7 +48,7 @@ internal sealed class SoundCache_LRU : SoundCache_Base
         var currentTime = Time.time;
         var toRemove = new List<string>();
 
-        Log.Safe($"EvictÀs:{toRemove.Count}Œíœ,idle = {idleTimeThreshold}");
+        Log.Safe($"Evictå®Ÿè¡Œ:{toRemove.Count}ä»¶å‰Šé™¤,idle = {idleTimeThreshold}");
         foreach (var entry in lastAccessTime)
         {
             if (currentTime - entry.Value > idleTimeThreshold)
