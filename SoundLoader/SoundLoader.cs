@@ -4,9 +4,9 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 /// <summary>
-/// ƒTƒEƒ“ƒhƒŠƒ\[ƒX‚Ìƒ[ƒh,ƒAƒ“ƒ[ƒh‚ğ’S‚¤ƒNƒ‰ƒX<para></para>
-/// - Addressable‚ğ‰î‚µ‚ÄAudioClip‚ğ”ñ“¯Šú‚Éƒ[ƒh<para></para>
-/// - ƒ[ƒhŒ‹‰Ê‚ğƒLƒƒƒbƒVƒ…ŠÇ—ƒNƒ‰ƒX(ISoundCache)‚ÉˆÏ÷
+/// ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚½ãƒ¼ã‚¹ã®ãƒ­ãƒ¼ãƒ‰,ã‚¢ãƒ³ãƒ­ãƒ¼ãƒ‰ã‚’æ‹…ã†ã‚¯ãƒ©ã‚¹<para></para>
+/// - Addressableã‚’ä»‹ã—ã¦AudioClipã‚’éåŒæœŸã«ãƒ­ãƒ¼ãƒ‰<para></para>
+/// - ãƒ­ãƒ¼ãƒ‰çµæœã‚’ã‚­ãƒ£ãƒƒã‚·ãƒ¥ç®¡ç†ã‚¯ãƒ©ã‚¹(ISoundCache)ã«å§”è­²
 /// </summary>
 public class SoundLoader : ISoundLoader
 {
@@ -19,7 +19,7 @@ public class SoundLoader : ISoundLoader
 
     public async UniTask<(bool success, AudioClip clip)> TryLoadClip(string resourceAddress)
     {
-        Log.Safe($"TryLoadClipÀs:{resourceAddress}");
+        Log.Safe($"TryLoadClipå®Ÿè¡Œ:{resourceAddress}");
         var handle = Addressables.LoadAssetAsync<AudioClip>(resourceAddress);
         var clip   = await handle.Task;
 
@@ -27,12 +27,12 @@ public class SoundLoader : ISoundLoader
             handle.Status == AsyncOperationStatus.Succeeded)
         {
             cache.Add(resourceAddress, clip);
-            Log.Safe($"TryLoadClip¬Œ÷:{resourceAddress}");
+            Log.Safe($"TryLoadClipæˆåŠŸ:{resourceAddress}");
             return (success: true, clip);
         }
         else
         {
-            Log.Error($"TryLoadClip¸”s:{resourceAddress},Status = {handle.Status}");
+            Log.Error($"TryLoadClipå¤±æ•—:{resourceAddress},Status = {handle.Status}");
             cache.Remove(resourceAddress);
             Addressables.Release(handle);
             return (success: false, null);
@@ -41,7 +41,7 @@ public class SoundLoader : ISoundLoader
 
     public void UnloadClip(string resourceAddress)
     {
-        Log.Safe($"UnloadClipÀs:{resourceAddress}");
+        Log.Safe($"UnloadClipå®Ÿè¡Œ:{resourceAddress}");
         cache.Remove(resourceAddress);
     }
 }
