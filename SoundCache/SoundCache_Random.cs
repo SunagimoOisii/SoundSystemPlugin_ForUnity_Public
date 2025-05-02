@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// ƒTƒEƒ“ƒhƒŠƒ\[ƒX‚ÌƒLƒƒƒbƒVƒ…ŠÇ—‚ğ’S‚¤ƒNƒ‰ƒX<para></para>
-/// - ƒLƒƒƒbƒVƒ…”‚ÌãŒÀ‚ğ’´‚¦‚½ê‡Aƒ‰ƒ“ƒ_ƒ€‚ÉƒŠƒ\[ƒX‚ğ‘I‘ğ‚µ‚Äíœ‚ğs‚¤
+/// ã‚µã‚¦ãƒ³ãƒ‰ãƒªã‚½ãƒ¼ã‚¹ã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥ç®¡ç†ã‚’æ‹…ã†ã‚¯ãƒ©ã‚¹<para></para>
+/// - ã‚­ãƒ£ãƒƒã‚·ãƒ¥æ•°ã®ä¸Šé™ã‚’è¶…ãˆãŸå ´åˆã€ãƒ©ãƒ³ãƒ€ãƒ ã«ãƒªã‚½ãƒ¼ã‚¹ã‚’é¸æŠã—ã¦å‰Šé™¤ã‚’è¡Œã†
 /// </summary>
 internal sealed class SoundCache_Random : SoundCache_Base
 {
@@ -25,7 +25,7 @@ internal sealed class SoundCache_Random : SoundCache_Base
         int excessCount = cache.Count - maxCacheCount;
         var keys        = new List<string>(cache.Keys);
 
-        Log.Safe($"EvictÀs:{excessCount}Œíœ,max = {maxCacheCount}");
+        Log.Safe($"Evictå®Ÿè¡Œ:{excessCount}ä»¶å‰Šé™¤,max = {maxCacheCount}");
         for (int i = 0; i < excessCount; i++)
         {
             if (keys.Count == 0) break;
