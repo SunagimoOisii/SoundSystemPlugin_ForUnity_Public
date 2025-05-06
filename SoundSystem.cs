@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 /// <summary>
-/// ƒTƒEƒ“ƒhŠÇ—‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg‚ğ’ñ‹Ÿ‚·‚éƒNƒ‰ƒX<para></para>
-/// - Šeƒ}ƒl[ƒWƒƒ‚Æ‹@”\ƒCƒ“ƒ^[ƒtƒF[ƒX‚ğŠO•”‚©‚çó‚¯æ‚è“ˆê“I‚ÉŠÇ—<para></para>
-/// - –{ƒ‚ƒWƒ…[ƒ‹‚É“¯«‚ÌAudioMixerƒIƒuƒWƒFƒNƒg‚Ìg—p‚ğ‘O’ñ‚Æ‚µ‚Ä‚¢‚é
+/// ã‚µã‚¦ãƒ³ãƒ‰ç®¡ç†ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã‚’æä¾›ã™ã‚‹ã‚¯ãƒ©ã‚¹<para></para>
+/// - å„ãƒãƒãƒ¼ã‚¸ãƒ£ã¨æ©Ÿèƒ½ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã‚’å¤–éƒ¨ã‹ã‚‰å—ã‘å–ã‚Šçµ±ä¸€çš„ã«ç®¡ç†<para></para>
+/// - æœ¬ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã«åŒæ¢±ã®AudioMixerã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½¿ç”¨ã‚’å‰æã¨ã—ã¦ã„ã‚‹
 /// </summary>
 public sealed class SoundSystem
 {
@@ -17,8 +17,8 @@ public sealed class SoundSystem
 
     private readonly AudioMixer mixer;
 
-    private List<SoundSystemPreset.BGMSetting> bgmPresets;
-    private List<SoundSystemPreset.SESetting>  sePresets;
+    private SerializedBGMSettingDictionary bgmPresets;
+    private SerializedSESettingDictionary  sePresets;
 
     public SoundSystem(ISoundCache cache, IAudioSourcePool sourcePool, AudioMixer mixer,
         AudioMixerGroup bgmGroup, bool canLogging = true)
@@ -36,22 +36,22 @@ public sealed class SoundSystem
         this.mixer = mixer;
     }
 
-    public static SoundSystem CreateFromPreset(SoundSystemPreset preset, IAudioSourcePool sourcePool,
+    public static SoundSystem CreateFromPreset(SoundPresetProperty preset, IAudioSourcePool sourcePool,
         AudioMixer mixer, AudioMixerGroup bgmGroup)
     {
         var cache = SoundCacheFactory.Create(
-            preset.cacheType,
-            preset.param
+            preset.param,
+            preset.cacheType
         );
 
         var ss = new SoundSystem(cache, sourcePool, mixer, bgmGroup);
-        ss.SetPresets(preset.bgmSettings, preset.seSettings);
+        ss.SetPresets(preset.bgmPresets, preset.sePresets);
         return ss;
     }
 
-    //CreateFromPresetŠÖ”‚Ì‚½‚ß‚ÉÀ‘•‚µ‚½
-    private void SetPresets(List<SoundSystemPreset.BGMSetting> bgmList,
-        List<SoundSystemPreset.SESetting> seList)
+    //CreateFromPreseté–¢æ•°ã®ãŸã‚ã«å®Ÿè£…ã—ãŸ
+    private void SetPresets(SerializedBGMSettingDictionary bgmList,
+        SerializedSESettingDictionary seList)
     {
         bgmPresets = bgmList;
         sePresets  = seList;
@@ -65,7 +65,7 @@ public sealed class SoundSystem
         }
         else
         {
-            Debug.LogWarning($"SoundSystem: ƒpƒ‰ƒ[ƒ^ '{exposedParamName}' ‚Ìæ“¾‚É¸”s");
+            Debug.LogWarning($"SoundSystem: ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ '{exposedParamName}' ã®å–å¾—ã«å¤±æ•—");
             return null;
         }
     }
@@ -74,30 +74,18 @@ public sealed class SoundSystem
     {
         if (mixer.SetFloat(exposedParamName, value) == false)
         {
-            Debug.LogWarning($"SoundSystem: ƒpƒ‰ƒ[ƒ^ '{exposedParamName}' ‚Ìİ’è‚É¸”s");
+            Debug.LogWarning($"SoundSystem: ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ '{exposedParamName}' ã®è¨­å®šã«å¤±æ•—");
         }
     }
 
-    private bool TryRetrieveBGMPreset(string presetName, out SoundSystemPreset.BGMSetting preset)
+    private bool TryRetrieveBGMPreset(string presetName, out SoundPresetProperty.BGMPreset preset)
     {
-        preset = bgmPresets?.Find(b => b.name == presetName);
-        if (preset == null)
-        {
-            Debug.LogWarning($"SoundSystem: presetName '{presetName}' ‚É‘Î‰‚·‚éBGMƒvƒŠƒZƒbƒg‚ª‘¶İ‚µ‚È‚¢");
-            return false;
-        }
-        else return true;
+        return bgmPresets.TryGetValue(presetName, out preset);
     }
 
-    private bool TryRetrieveSEPreset(string presetName, out SoundSystemPreset.SESetting preset)
+    private bool TryRetrieveSEPreset(string presetName, out SoundPresetProperty.SEPreset preset)
     {
-        preset = sePresets?.Find(s => s.name == presetName);
-        if (preset == null)
-        {
-            Debug.LogWarning($"SoundSystem: presetName '{presetName}' ‚É‘Î‰‚·‚éSEƒvƒŠƒZƒbƒg‚ª‘¶İ‚µ‚È‚¢");
-            return false;
-        }
-        else return true;
+        return sePresets.TryGetValue(presetName, out preset);
     }
 
     public void MuteAllSound()
@@ -114,7 +102,7 @@ public sealed class SoundSystem
 
     public async UniTask PlayBGMWithPreset(string resourceAddress, string presetName)
     {
-        if (TryRetrieveBGMPreset(presetName, out SoundSystemPreset.BGMSetting preset))
+        if (TryRetrieveBGMPreset(presetName, out SoundPresetProperty.BGMPreset preset))
         {
             await FadeInBGM(resourceAddress, preset.fadeInDuration, preset.volume);
         }
@@ -143,7 +131,7 @@ public sealed class SoundSystem
 
     public async UniTask FadeInBGMWithPreset(string resourceAddress, string presetName)
     {
-        if (TryRetrieveBGMPreset(presetName, out SoundSystemPreset.BGMSetting preset))
+        if (TryRetrieveBGMPreset(presetName, out SoundPresetProperty.BGMPreset preset))
         {
             await bgm.FadeIn(resourceAddress, preset.fadeInDuration, preset.volume);
         }
@@ -156,7 +144,7 @@ public sealed class SoundSystem
 
     public async UniTask FadeOutBGMWithPreset(string presetName)
     {
-        if (TryRetrieveBGMPreset(presetName, out SoundSystemPreset.BGMSetting preset))
+        if (TryRetrieveBGMPreset(presetName, out SoundPresetProperty.BGMPreset preset))
         {
             await bgm.FadeOut(preset.fadeOutDuration);
         }
@@ -169,7 +157,7 @@ public sealed class SoundSystem
 
     public async UniTask CrossFadeBGMWithPreset(string resourceAddress, string presetName)
     {
-        if (TryRetrieveBGMPreset(presetName, out SoundSystemPreset.BGMSetting preset))
+        if (TryRetrieveBGMPreset(presetName, out SoundPresetProperty.BGMPreset preset))
         {
             await bgm.CrossFade(resourceAddress, preset.crossFadeDuration);
         }
@@ -185,7 +173,7 @@ public sealed class SoundSystem
 
     public async UniTask PlaySEWithPreset(string resourceAddress, string presetName)
     {
-        if (TryRetrieveSEPreset(presetName, out SoundSystemPreset.SESetting preset))
+        if (TryRetrieveSEPreset(presetName, out SoundPresetProperty.SEPreset preset))
         {
             await se.Play(resourceAddress,
                 preset.volume, preset.pitch, preset.spatialBlend, preset.position);
