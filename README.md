@@ -23,7 +23,8 @@ Unity向けの柔軟で拡張可能なサウンド管理システムです。
 graph
 
 %% 外部公開API
-SoundSystem
+classDef highlight stroke-width:8px
+SoundSystem:::highlight
 SoundSystemPreset
 SerializedBGMSettingDictionary
 SerializedSESettingDictionary
