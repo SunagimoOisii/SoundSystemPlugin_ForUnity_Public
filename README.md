@@ -20,49 +20,59 @@ Unity向けの柔軟で拡張可能なサウンド管理システムです。
 
 ## システム構成
 ```mermaid
-classDiagram
-    class SoundSystem {
-        +PlayBGM()
-        +PlaySE()
-        +ApplyEffectFilter()
-        +CreateFromPreset()
-    }
+graph
 
-    class BGMManager
-    class SEManager
-    class ListenerEffector
-    class ISoundLoader
-    class SoundLoader
-    class ISoundCache
-    class SoundCache_Base
-    class SoundCache_LRU
-    class SoundCache_TTL
-    class SoundCache_Random
-    class SoundCacheFactory
-    class IAudioSourcePool
-    class AudioSourcePool_Base
-    class AudioSourcePool_OldestReuse
-    class AudioSourcePoolFactory
-    class SoundSystemPreset
+%% 外部公開API
+SoundSystem
+SoundSystemPreset
+SerializedBGMSettingDictionary
+SerializedSESettingDictionary
 
-    SoundSystem --> BGMManager
-    SoundSystem --> SEManager
-    SoundSystem --> ListenerEffector
-    SoundSystem --> SoundSystemPreset
-    SoundSystem --> SoundLoader
-    SoundLoader --> ISoundCache
-    SoundLoader --> SoundCacheFactory
-    BGMManager --> ISoundLoader
-    SEManager --> ISoundLoader
-    SEManager --> IAudioSourcePool
-    SoundCacheFactory --> SoundCache_LRU
-    SoundCacheFactory --> SoundCache_TTL
-    SoundCacheFactory --> SoundCache_Random
-    SoundCache_LRU --> SoundCache_Base
-    SoundCache_TTL --> SoundCache_Base
-    SoundCache_Random --> SoundCache_Base
-    AudioSourcePoolFactory --> AudioSourcePool_OldestReuse
-    AudioSourcePool_OldestReuse --> AudioSourcePool_Base
+%% プレイヤー管理
+BGMManager
+SEManager
+ListenerEffector
+
+%% ローダ・キャッシュ
+ISoundLoader
+SoundLoader
+ISoundCache
+SoundCache_Base
+SoundCache_LRU
+SoundCache_TTL
+SoundCache_Random
+SoundCacheFactory
+
+%% AudioSourcePool関連
+IAudioSourcePool
+AudioSourcePool_Base
+AudioSourcePool_OldestReuse
+AudioSourcePoolFactory
+
+%% 関係定義
+SoundSystem -->|利用| BGMManager
+SoundSystem -->|利用| SEManager
+SoundSystem -->|利用| ListenerEffector
+SoundSystem -->|プリセット読込| SoundSystemPreset
+SoundSystem -->|生成| SoundLoader
+SoundLoader -->|依存| ISoundCache
+SoundLoader -->|間接依存| SoundCacheFactory
+BGMManager -->|利用| ISoundLoader
+SEManager -->|利用| ISoundLoader
+SEManager -->|利用| IAudioSourcePool
+
+SoundCacheFactory -->|生成| SoundCache_LRU
+SoundCacheFactory -->|生成| SoundCache_TTL
+SoundCacheFactory -->|生成| SoundCache_Random
+SoundCache_LRU -->|継承| SoundCache_Base
+SoundCache_TTL -->|継承| SoundCache_Base
+SoundCache_Random -->|継承| SoundCache_Base
+
+AudioSourcePoolFactory -->|生成| AudioSourcePool_OldestReuse
+AudioSourcePool_OldestReuse -->|継承| AudioSourcePool_Base
+
+SoundSystemPreset -->|BGMプリセット保持| SerializedBGMSettingDictionary
+SoundSystemPreset -->|SEプリセット保持| SerializedSESettingDictionary
 ```
 
 
