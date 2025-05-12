@@ -1,5 +1,6 @@
 ●大目次
 ・SoundSystem
+・SoundPreset
 ・BGMManager
 ・SEManager
 ・AudioSourcePool
@@ -14,7 +15,7 @@ SoundSystem
 /////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
 日付：2025/04/28
-タイトル：SoundSystemにプリセット機能の導入、SoundSystemPresetの作成
+タイトル：SoundSystemにプリセット機能の導入、SoundPresetの作成
 //////////////////////////////////////////////////////////////
 [背景]
 ・BGM,SE再生のパラメータをプリセットから適用できる仕組みを追加したい
@@ -63,6 +64,40 @@ SoundSystem
 [結果]
 ・ファイルロックの問題が解消された
 ・1シーンでSoundSystemが複数生成された場合のLog初期化重複に対応した
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+SoundPreset
+/////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+日付：2025/05/06
+タイトル：SoundPreset用のDictionaryクラスの作成、BGMSetting,SESettingをstructに変更
+変更箇所：SoundPresetProperty
+新規作成：SerializedBGMSettingDictionary,SerializedSESettingDictionary
+//////////////////////////////////////////////////////////////
+[背景]
+・SoundPresetPropertyクラスでは BGM,SE のプリセット情報を List<BGMSetting>,List<SESetting> で保持し、presetName をキーに Find() を用いて検索していた
+　・これでは探索が(O(n))となるため、Dictionaryに置き換えたかったが、インスペクターでは Dictionaryを表示,編集できないため、単純な置き換えは不可能だった
+・BGMSetting,SESettingはclassだったが、これらプリセットは使い捨てであり、「前回のプリセットを用いて再生」のような機能はないため、struct(値型)にしても問題はなく、むしろメモリ効率が改善すると考えていた
+
+[方針]
+・ISerializationCallbackReceiverを実装した専用クラスを用意し、エディター上では List、実行時には Dictionary<string, Preset> に変換する設計
+・presetName をキーとして Dictionary を構築
+・BGMSetting,SESettingをclassからstructに変更
+・BGMSetting,SESetting を BGMPreset,SEPreset に改名
+
+[実装内容]
+・SerializedBGMSettingDictionary,SerializedSESettingDictionary を新規作成
+　・インスペクター表示用の List<BGMPreset>,List<SEPreset> を presetList として保持
+　・デシリアライズ後に presetName をキーとして Dictionary を構築するよう OnAfterDeserialize() を実装
+　・presetDict.TryGetValue() によって SoundSystem 側から高速にアクセスできるよう設計
+・SoundPresetPropertyのList<BGMSetting>,List<SEPreset> を SerializedBGMSettingDictionary , SerializedSESettingDictionary に置き換え
+
+[結果]
+・インスペクターでプリセットを操作できる機能はそのままに、Dictionary による高速なプリセットの検索(O(1))を実装
+・BGMPreset,SEPresetをstructに変更
+
+[参考]
+・たむぼー, 【Unity】Inspectorで設定できるDictionaryを作りたい, https://zenn.dev/tmb/articles/9b4c532da8d467#serializabledictionary-1
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 BGMManager
@@ -202,6 +237,8 @@ AudioSourcePool
 //////////////////////////////////////////////////////////////
 日付：2025/04/21
 タイトル：AudioSourcePool運用方式選択対応の設計、AudioSourcePool_Base,AudioSourcePool_OldestReuse,AudioSourcePoolFactoryの作成
+変更箇所：AudioSourcePool(AudioSourcePool_Baseに改修)
+新規作成：AudioSourcePool_Base,AudioSourcePool_OldestReuse,AudioSourcePoolFactory
 //////////////////////////////////////////////////////////////
 [背景]
 ・従来のAudioSourcePoolはOldestReuse方式のみ対応だった
@@ -223,12 +260,61 @@ AudioSourcePool
 [結果]
 ・AudioSourcePool管理方式選択の設計が整った(外部から方式を指定することが可能になった)
 
+//////////////////////////////////////////////////////////////
+日付：2025/05/02
+タイトル：AudioSourcePool_Strictの作成
+変更箇所：AudioSourcePool_Strict
+//////////////////////////////////////////////////////////////
+[背景]
+・AudioSourcePool_Baseの派生クラスとしてAudioSourcePool_FIFO以外を作成しておきたかった(その1クラスしかなかった)
+
+[方針]
+・最大数を超えての再利用を行わないStrict方式を実装
+・全て使用中かつプールが最大数に達している場合は null を返し、呼び出し側で再生中断を判断させる構成
+・従来方式と同様にFIFO探索を行い、未使用ソースを優先して再利用するロジックを導入
+
+[実装内容]
+・AudioSourcePool_Strict クラスを新規作成
+　・未使用ソースがある場合はそれを返却
+　・最大数未満なら新規作成し登録
+　・全て使用中かつ最大数なら null を返す
+　・大部分の動き方はFIFOの方と似ている
+・SEManagerでAudioSourcePoolのRetrieveに対して null チェックを導入
+
+[結果]
+・「最大数制限付きのSE再生」が可能になった
+
+//////////////////////////////////////////////////////////////
+日付：2025/05/02
+タイトル：AudioSourcePoolFactoryのCreate一本化
+変更箇所：AudioSourcePoolFactory
+//////////////////////////////////////////////////////////////
+[背景]
+・CreateOldestReuse() のように方式ごとに別のファクトリーメソッドが存在していた
+・SoundCacheFactoryと同様に、方式を enum で指定し、単一の Create() で切り替え可能にしたい
+
+[方針]
+・PoolType enumを定義し、AudioSourcePoolの方式を識別可能にする
+　・将来的な方式追加にも対応できるしやすい
+・既存のFIFO、Strict方式は switch 文で生成処理を振り分ける構成に統一
+　・ここもSoundCacheFactoryと同じ
+
+[実装内容]
+・AudioSourcePoolFactory.PoolType enumを追加(FIFO , Strict)
+・Create(AudioMixerGroup, int, int, PoolType) を実装
+　・type に応じて AudioSourcePool_FIFO または AudioSourcePool_Strict を生成
+・既存の CreateOldestReuse は削除
+
+[結果]
+・将来の方式追加にも対応しやすくなった(拡張性が向上)
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 SoundLoader
 /////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
 日付：2025/04/27
 タイトル：LoadClip関数の強化(失敗時エラー処理、安全性向上)
+変更箇所：ISoundLoader,SoundLoader,BGMManager,SEManager
 //////////////////////////////////////////////////////////////
 [背景]
 ・従来のLoadClip関数ではロード失敗時、例外(InvalidOperationException)をスローしており、アプリ全体への波及リスクがあった。
@@ -259,6 +345,7 @@ SoundCache
 //////////////////////////////////////////////////////////////
 日付：2025/04/28
 タイトル：SoundCache_Base作成、SoundCache_IdleTime作成
+新規作成：SoundCache_Base,SoundCache_IdleTime
 //////////////////////////////////////////////////////////////
 [背景]
 ・これまでSoundCacheは単一の実装のみ存在し、方式の切り替えができなかった
@@ -282,6 +369,8 @@ SoundCache
 //////////////////////////////////////////////////
 日付：2025/04/28
 タイトル：SoundCache_LRU(旧IdleTime版)、SoundCache_TTL作成
+変更箇所：SoundCache_IdleTime(SoundCache_LRUに改名)
+新規作成：SoundCache_LRU,SoundCache_TTL
 //////////////////////////////////////////////////
 [背景]
 ・SoundCache_IdleTimeは、最終アクセス時間を基準に未使用リソースを削除する仕組みだった。この方式は実質LRU(Least Resource Used)の考えに基づくものだったため、より正確な名前(SoundCache_LRU)に改名することにした
@@ -310,6 +399,7 @@ SoundCache
 //////////////////////////////////////////////////
 日付：2025/04/28
 タイトル：SoundCacheFactoryクラスの作成
+新規作成：SounCacheFactory
 //////////////////////////////////////////////////
 [背景]
 ・SoundSystemが利用するISoundCacheインスタンスには異なる削除方式(LRU方式、TTL方式、Random方式)を選択できるようになった。しかし、これらの具象クラス(SoundCache_LRU,SoundCache_TTL,SoundCache_Random)はinternalとする方針で、外部コードから直接newできない構成にしている。そのため、外部にはインターフェース(ISoundCache)だけを見せつつ、
@@ -354,7 +444,7 @@ Log
 //////////////////////////////////////////////////////////////
 日付：2025/04/30
 タイトル：Logクラスにおけるカテゴリ自動推定機能の導入
-変更箇所：Log.cs(新規作成)
+新規作成：Log
 //////////////////////////////////////////////////////////////
 [背景]
 ・ログ出力時のカテゴリ指定が毎回手動で必要だったため、開発効率や可読性の面で冗長性があった
